@@ -1,0 +1,23 @@
+{
+  "name": "mw_puma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "serialport": "^7.0.2",
+    "named-pipes": "0.0.1",
+    "sleep": "5.2.*",
+    "underscore": "1.9.*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wangfei0422/puma-serial.git"
+  },
+  "scripts": {
+    "//test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Thanks for test. I will complete it quickly.\" && exit 0"
+  },
+  "keywords": [],
+  "author": "mw_wangfei <wangfe04@qq.com>",
+  "license": "MIT"
+}
