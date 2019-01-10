@@ -1,4 +1,4 @@
-const info = require("./console_output/info.js");
+const Info = require("./console_output/info.js");
 function ConsoleOutput() {
 	this.curr = null;
 }
@@ -33,7 +33,7 @@ function clear(){
 	console.clear();
 }
 //输出文字
-function output(color,msg){
+function get_output(color,msg){
 	if(arguments.length == 1){
 		msg = color;
 		color = "normal";
@@ -42,56 +42,38 @@ function output(color,msg){
 	if(color.trim() == ""){
 		color = "normal";
 	}
-	console.log(STYLES[color][0] + "%s" + STYLES[color][1],msg);
-}
-//定位坐标
-function move_to(color,x,y){
-	if(arguments.length == 2){
-		y = x;
-		x = color;
-		color = "normal";
-	}
-	if(color.trim() == ""){
-		color = "normal";
-	}
-	var space = "";
-	while(y > 0){
-		space = space + ' '.repeat(80);		//一行80个字符
-		y--;
-	}
-	space = space + ' '.repeat(x);
-	output(color,space);
+	return STYLES[color][0] + msg + STYLES[color][1];
 }
 
-//输出
-function print(datas){
-	//首先格式化数据,每条数据有base show两项值
-	this.curr.set_datas(datas);
-	this.curr.print(this);
-}
-function init_info(){
+//初始化为信息输出
+function init_info(master){
 	clear();
-	this.curr = info;
-	
+	this.curr = new Info(this,master);
+}
+//更新输出
+function update(source){
 	//以下测试
 	//要打印的数据
-	var datas = {
-		g:{
-			task_pages:"52",
-		},
-		a:{
-			tasks:{
-				items:[{},{}],
-				curr_item:-1,
-			},
-		}
-	};
-	this.print(datas);
+	this.curr.update(source);
+}
+//替换模板变量
+function replace(temp,vars){
+	var text = "";
+	//console.log(vars);
+	//console.log(Object.keys(vars).length);
+	if(Object.keys(vars).length == 0) return temp;
+	for(let n in vars){
+		var reg = new RegExp("{" + n + "}","g");
+		text = temp.replace(reg, vars[n]);
+	}
+	return text;
 }
 ConsoleOutput.prototype.clear = clear;
-ConsoleOutput.prototype.output = output;
-ConsoleOutput.prototype.move_to = move_to;
-ConsoleOutput.prototype.print = print;
+ConsoleOutput.prototype.get_output = get_output;
+
 ConsoleOutput.prototype.init_info = init_info;
+
+ConsoleOutput.prototype.update = update;
+ConsoleOutput.prototype.replace = replace;
 
 module.exports = new ConsoleOutput();

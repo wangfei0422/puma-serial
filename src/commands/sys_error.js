@@ -5,7 +5,6 @@ function Command(source,cmd){
 
 function run(){
 	//console.log("message from " + this.source + ":");
-	//console.log("aaaaaaaaaaaaaaaaaa");
 	//console.log(this.cmd);
 }
 Command.prototype.run = run;

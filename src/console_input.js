@@ -4,7 +4,7 @@ function ConsoleInput(){
 }
 
 function start(){
-	process.stdin.resume();		//启动控制台输入
+	//process.stdin.resume();		//启动控制台输入
 	const rl = readline.createInterface({
 	  input: process.stdin,
 	  output: process.stdout
@@ -13,6 +13,7 @@ function start(){
 		readline.cursorTo(process.stdout,0,-1);
 		readline.clearLine(process.stdout,0);
 		process.send({type:"sys",cmd:"text_command",params:{text:input}});
+		//process.stdin.pause();
 	});
 }
 function recv_cmd(msg){

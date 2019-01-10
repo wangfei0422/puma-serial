@@ -1,3 +1,75 @@
+Puma6SPDriver
+
+1  要求
+   接收远程命令
+   允许本地操作
+   
+   打印任务队例－－排队、删除、出队		需要同步
+   
+   当前任务－－停止、暂停、重启、开始、取消
+   状态机：停止 －〉分配任务 －〉任务初始化 －〉打印 －〉暂停 －〉打印
+					  ｜__^____________｜_________｜_______^|_____> 停止
+					  
+	
+	管道命令：将来可扩展至网络
+	本地操作：控制台输入、输出（最底一行输出当前状态）
+	
+2	技术
+	管道 串口 多线程 控制台 文件
+	
+	
+	
+	
+3	node cluster
+	Master:接收命令
+		   维护打印任务队例
+		   向打印线程发送打印命令
+		   记录打印线程的状态、当前命令源
+		   管理输入（命令提示、任务队伍、     命令源、打印状态）
+		   
+	ReadWorker: 读命令、切换当前命令源
+	CMDSourceWorker:
+	
+	
+	PrintWorker:执行命令、给主线程发送状态
+	
+	
+	
+	
+	index.js
+	master.js	Master进程	初始化 接收到退出命令则退出,管理输出
+	console_input.js  ReadWorker进程 默认命令源
+	cmd_source_(*).js  命令源线程 退出时自动切换到命令线程
+	print.js   打印线程
+	
+	
+	主线程		：开启控制台读线程，开启打印线程，初始化任务队例，初始化状态变化事件，初始化输出，在指定命令源上等待命令,向线程发送命令
+				
+				  type:system
+				  cmd :start_console_input,	start_cmd_source,	exit_cmd_source,	exit
+				  type:app
+				  cmd :start,	pause,	restart,	cancle,	stop,	dispatch_task
+				
+				  
+	控制台读线程：异步监听控制台输入，向主线程发送管理命令（切换命令源，退出程序），向主线程发送任务命令
+				  type:system
+				  cmd :exit,	switch_cmd_source
+				  
+				  type:app
+				  cmd :start,	pause,	restart,	cancle,	stop,	dispatch_task
+	命令源		：监听远程命令，向主线程发送命令
+				  type:system
+				  cmd :exit,	switch_cmd_source
+				  
+				  type:app
+				  cmd :start,	pause,	restart,	cancle,	stop,	dispatch_task
+	打印线程	：接收主线程命令，向主线程发送状态（停止、分配任务中（空闲）、任务初始化、打印、暂停）
+				  status	:	stopped,waiting_task,initing_task,printing,paused
+				  
+				  type:app
+				  cmd :status	params[stopped,waiting_task,initing_task,printing,paused | ...]
+	
+
 1 主线程
 	a、全局变量 
 		global.master
@@ -23,6 +95,11 @@
 			
 
 输出：
+		执行命令
+		是否有更新？有则更新输出，并定位输入位置
+		通知控制台重启输入
+	
+命令参数：
 	
 			
 			
