@@ -19,8 +19,8 @@ function Command(source,cmd){
 	
 	this.commands_params = {
 		add : {	type:"app",
-				0:true,
-				2:[{name:"start_page",type:"int",literal:"*"},{name:"end_page",type:"int",literal:"*"}],
+				1:[{name:"file",type:"string"}],
+				3:[{name:"file",type:"string"},{name:"start_page",type:"int"},{name:"end_page",type:"int",literal:"*"}],
 			},
 		cancle: {type:"app",1:[{name:"id",type:"int"}]
 			},
@@ -35,6 +35,7 @@ function createCommandFromText(text){
 	var cmd_name = items[0];
 	var cmd_info;
 	var cmd = {};
+	var cmd_error = {type:"sys",cmd:"error",params:{source:this.source,type:this.type,cmd:this.cmd,params:this.params}};
 	if(items.length >0 && this.commands.indexOf(cmd_name) > -1){
 		
 		cmd_info = this.commands_params[cmd_name];
@@ -42,7 +43,7 @@ function createCommandFromText(text){
 		cmd.cmd = cmd_name;
 		cmd.params = {};
 		if(typeof cmd_info[params_length] !== "undefined"){
-			if(params_length == 0 && cmd_info[params_length] == true){
+			if(params_length == 0 && typeof cmd_info[0] !== "undefined" && cmd_info[0] == true){
 				cmd.params = {};
 			}else{
 				for(let i in cmd_info[params_length]){
@@ -53,21 +54,22 @@ function createCommandFromText(text){
 					}else if((p["type"] === "int") && !isNaN(items[j+1])){
 						cmd.params[p["name"]] = parseInt(items[j+1]);
 					}else{
-						cmd = {type:"sys",cmd:"error",params:{source:this.source,type:this.type,cmd:this.cmd,params:this.params}};
+						cmd = cmd_error;
 						//console.log(cmd);
 						return cmd;
 					}
 				}
 			}
 	
+		}else{
+		//不存在此命令
+		cmd = cmd_error;
 		}
-
-
 	}else{
 		//不存在此命令
-		cmd = {type:"sys",cmd:"error",params:{source:this.source,type:this.type,cmd:this.cmd,params:this.params}};
+		cmd = cmd_error;
 	}
-	//console.log(cmd);
+	console.log(cmd);
 	return cmd;
 }
 

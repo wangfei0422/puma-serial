@@ -2,6 +2,7 @@ Command = require("./command.js");
 console_output = require("./console_output.js");
 const path = require('path');
 const fs = require('fs');
+const fn = require("./fn.js");
 function Master() {
 	//线程
 	this.dirty = true;											//数据改变，需要更新输出
@@ -56,6 +57,7 @@ function initData(self){
 			sucess_cmds:[],
 			fail_cmds:[],
 			tasks:[],
+			next_task_id:1,
 		};
 	}
 	self.threads.console_input.datas = getDatas();
@@ -71,7 +73,7 @@ function initData(self){
 function processCommand(file,worker,cmd){
 	var CMDProc = require(file);
 	var c = new CMDProc(worker,cmd);
-	c.run();
+	c.run.apply(c, fn.objToArr(cmd.params));
 	console_output.update(worker);		//命令源发出的更新
 }
 //命令分发
